@@ -34,8 +34,17 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve frontend static build if available
-const frontendDistPath = path.join(__dirname, '../../frontend/dist');
-if (fs.existsSync(frontendDistPath)) {
+const possibleStaticPaths = [
+  path.join(__dirname, '../../frontend/public'),
+  path.join(__dirname, '../../frontend/dist'),
+  path.join(__dirname, '../../public'),
+  path.join(__dirname, '../../dist'),
+];
+
+const frontendDistPath = possibleStaticPaths.find((p) => fs.existsSync(path.join(p, 'index.html')));
+
+if (frontendDistPath) {
+  console.log(`Serving frontend static files from: ${frontendDistPath}`);
   app.use(express.static(frontendDistPath));
   app.use((req, res, next) => {
     if (req.path.startsWith('/api')) return next();
