@@ -1,17 +1,17 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Customer {
   customer_id    String       @id @default(uuid())
   name           String
   type           String
-  contact_info   Json
+  contact_info   String
   created_at     DateTime     @default(now())
   updated_at     DateTime     @updatedAt
 
