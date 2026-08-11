@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Customer {
+  customer_id    String       @id @default(uuid())
+  name           String
+  type           String
+  contact_info   Json
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @updatedAt
+
+  enquiries      Enquiry[]
+  serviceCalls   ServiceCall[]
+}
+
+model Enquiry {
+  enquiry_id     String       @id @default(uuid())
+  source         String
+  status         String
+  enquiry_date   DateTime     @default(now())
+  enquiry_type   String
+  customer_id    String
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @updatedAt
+
+  customer       Customer     @relation(fields: [customer_id], references: [customer_id])
+  projects       Project[]
+}
+
+model Project {
+  project_id              String       @id @default(uuid())
+  total_cost              Float
+  lead_time               Int
+  advance_payment_status  String
+  expected_delivery_date  DateTime
+  enquiry_id              String
+  created_at              DateTime     @default(now())
+  updated_at              DateTime     @updatedAt
+
+  enquiry                 Enquiry      @relation(fields: [enquiry_id], references: [enquiry_id])
+  inventoryUnits          InventoryUnit[]
+}
+
+model Godown {
+  godown_id   String           @id @default(uuid())
+  name        String
+  location    String
+  capacity    Int
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
+
+  inventoryUnits InventoryUnit[]
+}
+
+model InventoryUnit {
+  serial_number     String       @id
+  current_location  String
+  warranty_status   String
+  installation_date DateTime?
+  godown_id         String
+  project_id        String?
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
+
+  godown            Godown       @relation(fields: [godown_id], references: [godown_id])
+  project           Project?     @relation(fields: [project_id], references: [project_id])
+}
+
+model Technician {
+  technician_id   String       @id @default(uuid())
+  name            String
+  phone_number    String
+  specialization  String
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  serviceCalls    ServiceCall[]
+}
+
+model ServiceCall {
+  call_id        String       @id @default(uuid())
+  type           String
+  date_opened    DateTime     @default(now())
+  defect_details String
+  status         String
+  customer_id    String
+  technician_id  String?
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @updatedAt
+
+  customer       Customer     @relation(fields: [customer_id], references: [customer_id])
+  technician     Technician?  @relation(fields: [technician_id], references: [technician_id])
+}

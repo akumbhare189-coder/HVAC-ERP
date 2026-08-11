@@ -1,0 +1,13 @@
+{
+  "name": "hvac-erp-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-Stack HVAC ERP Enterprise Operations Web Application",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd backend && npm install && npm run prisma:generate && npm run build && cd ../frontend && npm install && npm run build",
+    "seed": "cd backend && npx tsx prisma/seed.ts",
+    "start": "cd backend && node dist/index.js",
+    "dev": "npm run install:all && npm run dev --prefix backend"
+  }
+}
