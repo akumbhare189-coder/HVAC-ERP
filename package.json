@@ -4,8 +4,9 @@
   "private": true,
   "description": "Full-Stack HVAC ERP Enterprise Operations Web Application",
   "scripts": {
+    "dev": "npx concurrently -k -p \"[{name}]\" -n \"backend,frontend\" -c \"blue.bold,cyan.bold\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
     "build": "cd frontend && npm install && npm run build && cd .. && node scripts/copy-dist.js",
-    "start": "cd backend && npx prisma db push --skip-generate && npx tsx prisma/seed.ts && node dist/index.js"
+    "start": "cd backend && npx prisma db push --skip-generate && npx tsx prisma/seed.ts && node dist/src/index.js"
   }
 }

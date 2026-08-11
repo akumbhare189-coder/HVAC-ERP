@@ -38,4 +38,4 @@ COPY --from=builder /app/frontend/dist ./frontend/dist
 WORKDIR /app/backend
 
 # Runtime command: Sync SQLite schema, seed data, and start server
-CMD ["sh", "-c", "npx prisma db push --skip-generate && npx tsx prisma/seed.ts && node dist/index.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate && npx tsx prisma/seed.ts && node dist/src/index.js"]
