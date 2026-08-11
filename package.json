@@ -5,8 +5,7 @@
   "description": "Full-Stack HVAC ERP Enterprise Operations Web Application",
   "scripts": {
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "build": "cd backend && npm install && npx prisma generate && npx prisma db push --skip-generate && npm run build && cd ../frontend && npm install && npm run build",
-    "seed": "cd backend && npm run db:seed",
-    "start": "cd backend && node dist/index.js"
+    "build": "cd backend && npm install && npx prisma generate && npm run build && cd ../frontend && npm install && npm run build",
+    "start": "cd backend && npx prisma db push --skip-generate && npx tsx prisma/seed.ts && node dist/index.js"
   }
 }
