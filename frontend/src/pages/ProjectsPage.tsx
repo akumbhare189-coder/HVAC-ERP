@@ -10,6 +10,7 @@ import { Modal } from '../components/Modal';
 import { projectApi } from '../api/projects';
 import { enquiryApi } from '../api/enquiries';
 import type { Project, Enquiry } from '../types';
+import { formatCurrencyINR, formatDate } from '../utils/formatters';
 
 const PAYMENT_STATUSES = [
   { value: 'PENDING', label: 'Pending', color: 'warning' as const },
@@ -119,7 +120,7 @@ export function ProjectsPage() {
     { 
       key: 'total_cost', 
       header: 'Total Cost',
-      render: (item: Project) => <span className="font-medium">${item.total_cost.toLocaleString()}</span>,
+      render: (item: Project) => <span className="font-medium">{formatCurrencyINR(item.total_cost)}</span>,
     },
     { 
       key: 'lead_time', 
@@ -138,7 +139,7 @@ export function ProjectsPage() {
     { 
       key: 'expected_delivery_date', 
       header: 'Expected Delivery',
-      render: (item: Project) => new Date(item.expected_delivery_date).toLocaleDateString(),
+      render: (item: Project) => formatDate(item.expected_delivery_date),
     },
     { 
       key: 'inventoryUnits', 
@@ -210,7 +211,7 @@ export function ProjectsPage() {
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Cost</label>
-                <p className="text-gray-900 dark:text-white font-medium">${viewProject.total_cost.toLocaleString()}</p>
+                <p className="text-gray-900 dark:text-white font-medium">{formatCurrencyINR(viewProject.total_cost)}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Lead Time</label>
@@ -224,7 +225,7 @@ export function ProjectsPage() {
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Expected Delivery</label>
-                <p className="text-gray-900 dark:text-white">{new Date(viewProject.expected_delivery_date).toLocaleDateString()}</p>
+                <p className="text-gray-900 dark:text-white">{formatDate(viewProject.expected_delivery_date)}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Inventory Units</label>

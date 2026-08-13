@@ -34,11 +34,23 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve frontend static build if available
+const candidateRoots = [
+  process.cwd(),
+  path.resolve(process.cwd(), '..'),
+  path.resolve(__dirname, '..', '..'),
+  path.resolve(__dirname, '..', '..', '..'),
+];
+const projectRoot = candidateRoots.find((root) =>
+  fs.existsSync(path.join(root, 'frontend')) || fs.existsSync(path.join(root, 'backend'))
+) || process.cwd();
+
 const possibleStaticPaths = [
-  path.join(__dirname, '../../frontend/public'),
-  path.join(__dirname, '../../frontend/dist'),
-  path.join(__dirname, '../../public'),
-  path.join(__dirname, '../../dist'),
+  path.join(projectRoot, 'frontend', 'public'),
+  path.join(projectRoot, 'frontend', 'dist'),
+  path.join(projectRoot, 'public'),
+  path.join(projectRoot, 'dist'),
+  path.join(process.cwd(), 'public'),
+  path.join(process.cwd(), 'dist'),
 ];
 
 const frontendDistPath = possibleStaticPaths.find((p) => fs.existsSync(path.join(p, 'index.html')));
