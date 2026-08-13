@@ -1,6 +1,34 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 
+const normalizeContactInfo = (value: unknown) => {
+  if (!value) {
+    return { phone: '', email: '', address: '' };
+  }
+
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === 'object' && parsed !== null ? parsed : { phone: '', email: '', address: '' };
+    } catch {
+      return { phone: '', email: '', address: '' };
+    }
+  }
+
+  if (typeof value === 'object') {
+    return value as Record<string, string>;
+  }
+
+  return { phone: '', email: '', address: '' };
+};
+
+const serializeContactInfo = (value: unknown) => JSON.stringify(normalizeContactInfo(value));
+
+const formatCustomer = (customer: any) => ({
+  ...customer,
+  contact_info: normalizeContactInfo(customer.contact_info),
+});
+
 export const getCustomers = async (req: Request, res: Response) => {
   try {
     const customers = await prisma.customer.findMany({
@@ -10,7 +38,7 @@ export const getCustomers = async (req: Request, res: Response) => {
       },
       orderBy: { created_at: 'desc' },
     });
-    res.json(customers);
+    res.json(customers.map(formatCustomer));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch customers' });
   }
@@ -29,7 +57,7 @@ export const getCustomerById = async (req: Request, res: Response) => {
     if (!customer) {
       return res.status(404).json({ error: 'Customer not found' });
     }
-    res.json(customer);
+    res.json(formatCustomer(customer));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch customer' });
   }
@@ -39,9 +67,9 @@ export const createCustomer = async (req: Request, res: Response) => {
   try {
     const { name, type, contact_info } = req.body;
     const customer = await prisma.customer.create({
-      data: { name, type, contact_info },
+      data: { name, type, contact_info: serializeContactInfo(contact_info) },
     });
-    res.status(201).json(customer);
+    res.status(201).json(formatCustomer(customer));
   } catch (error) {
     res.status(500).json({ error: 'Failed to create customer' });
   }
@@ -53,9 +81,9 @@ export const updateCustomer = async (req: Request, res: Response) => {
     const { name, type, contact_info } = req.body;
     const customer = await prisma.customer.update({
       where: { customer_id: id },
-      data: { name, type, contact_info },
+      data: { name, type, contact_info: serializeContactInfo(contact_info) },
     });
-    res.json(customer);
+    res.json(formatCustomer(customer));
   } catch (error) {
     res.status(500).json({ error: 'Failed to update customer' });
   }

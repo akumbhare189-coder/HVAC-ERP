@@ -1,7 +1,14 @@
+import dotenv from 'dotenv';
 import { prisma } from '../src/lib/prisma';
+
+dotenv.config();
 
 async function main() {
   console.log('Seeding database with authentic, real-world HVAC industry data...');
+
+  const now = new Date();
+  const hoursAgo = (hours: number) => new Date(now.getTime() - hours * 60 * 60 * 1000);
+  const daysFromNow = (days: number) => new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
 
   // Clean existing data
   await prisma.serviceCall.deleteMany({});
@@ -91,6 +98,58 @@ async function main() {
     },
   });
 
+  const customerTataMotors = await prisma.customer.create({
+    data: {
+      name: 'Tata Motors Passenger Vehicles',
+      type: 'Automotive Manufacturing',
+      contact_info: JSON.stringify({
+        email: 'facility-ops@tatamotors.com',
+        phone: '+91 20 6624 9000',
+        address: 'Pune, Maharashtra 411045',
+        contact_person: 'Arjun Nair (Plant Maintenance Manager)',
+      }),
+    },
+  });
+
+  const customerInfosys = await prisma.customer.create({
+    data: {
+      name: 'Infosys Limited',
+      type: 'IT Campus Operations',
+      contact_info: JSON.stringify({
+        email: 'campus-services@infosys.com',
+        phone: '+91 80 2852 0261',
+        address: 'Electronics City, Bengaluru, Karnataka 560100',
+        contact_person: 'Riya Mehta (Infrastructure Lead)',
+      }),
+    },
+  });
+
+  const customerApollo = await prisma.customer.create({
+    data: {
+      name: 'Apollo Hospitals Enterprise Ltd.',
+      type: 'Healthcare Facility',
+      contact_info: JSON.stringify({
+        email: 'facility.planning@apollohospitals.com',
+        phone: '+91 44 2829 3333',
+        address: 'Chennai, Tamil Nadu 600035',
+        contact_person: 'Sanjay Reddy (Medical Engineering Head)',
+      }),
+    },
+  });
+
+  const customerReliance = await prisma.customer.create({
+    data: {
+      name: 'Reliance Industries Limited',
+      type: 'Industrial Complex',
+      contact_info: JSON.stringify({
+        email: 'industrial.services@reliance.com',
+        phone: '+91 289 669 7000',
+        address: 'Jamnagar, Gujarat 361140',
+        contact_person: 'Vikram Shah (Utility Operations Head)',
+      }),
+    },
+  });
+
   console.log('✔ Real corporate customers created.');
 
   // 2. Real Enquiries
@@ -139,6 +198,46 @@ async function main() {
     },
   });
 
+  const enquiryTataMotors = await prisma.enquiry.create({
+    data: {
+      source: 'Plant Maintenance Procurement',
+      status: 'QUALIFIED',
+      enquiry_type: 'Blue Star Chiller Plant Modernization for Paint Shop',
+      customer_id: customerTataMotors.customer_id,
+      enquiry_date: hoursAgo(18),
+    },
+  });
+
+  const enquiryInfosys = await prisma.enquiry.create({
+    data: {
+      source: 'Campus Energy Audit',
+      status: 'PROPOSAL_SENT',
+      enquiry_type: 'DAIKIN VRV IV Plus Upgradation for 3 Office Blocks',
+      customer_id: customerInfosys.customer_id,
+      enquiry_date: hoursAgo(42),
+    },
+  });
+
+  const enquiryApollo = await prisma.enquiry.create({
+    data: {
+      source: 'Hospital Facilities Network',
+      status: 'NEGOTIATION',
+      enquiry_type: 'Critical Care HVAC Redundancy Expansion',
+      customer_id: customerApollo.customer_id,
+      enquiry_date: hoursAgo(72),
+    },
+  });
+
+  const enquiryReliance = await prisma.enquiry.create({
+    data: {
+      source: 'Utility Operations Board',
+      status: 'CONVERTED',
+      enquiry_type: 'Thermal Storage & Cooling Tower Optimization Project',
+      customer_id: customerReliance.customer_id,
+      enquiry_date: hoursAgo(120),
+    },
+  });
+
   console.log('✔ Real HVAC enquiries created.');
 
   // 3. Real Projects
@@ -172,6 +271,36 @@ async function main() {
     },
   });
 
+  const projectTataMotors = await prisma.project.create({
+    data: {
+      total_cost: 421500.0,
+      lead_time: 52,
+      advance_payment_status: 'RECEIVED',
+      expected_delivery_date: daysFromNow(21),
+      enquiry_id: enquiryTataMotors.enquiry_id,
+    },
+  });
+
+  const projectInfosys = await prisma.project.create({
+    data: {
+      total_cost: 267400.0,
+      lead_time: 38,
+      advance_payment_status: 'PARTIAL',
+      expected_delivery_date: daysFromNow(16),
+      enquiry_id: enquiryInfosys.enquiry_id,
+    },
+  });
+
+  const projectApollo = await prisma.project.create({
+    data: {
+      total_cost: 318900.0,
+      lead_time: 41,
+      advance_payment_status: 'PENDING',
+      expected_delivery_date: daysFromNow(26),
+      enquiry_id: enquiryApollo.enquiry_id,
+    },
+  });
+
   console.log('✔ Real commercial projects created.');
 
   // 4. Real Warehouses / Distribution Depots
@@ -196,6 +325,22 @@ async function main() {
       name: 'West Coast Supply Chain Distribution Hub',
       location: '1500 E Francis St, Ontario, CA 91761',
       capacity: 950,
+    },
+  });
+
+  const godownPune = await prisma.godown.create({
+    data: {
+      name: 'Tata Motors Component Warehouse',
+      location: 'Chakan, Pune, Maharashtra 410501',
+      capacity: 1100,
+    },
+  });
+
+  const godownBengaluru = await prisma.godown.create({
+    data: {
+      name: 'Infosys Campus Energy Hub',
+      location: 'Electronics City, Bengaluru, Karnataka 560100',
+      capacity: 720,
     },
   });
 
@@ -249,6 +394,30 @@ async function main() {
         installation_date: new Date('2025-09-01'),
         godown_id: godownChicago.godown_id,
       },
+      {
+        serial_number: 'TATAMOTORS-CHILLER-4421',
+        current_location: 'Chakan Plant - Utility Bay 2',
+        warranty_status: 'ACTIVE_WARRANTY',
+        installation_date: hoursAgo(18 * 24),
+        godown_id: godownPune.godown_id,
+        project_id: projectTataMotors.project_id,
+      },
+      {
+        serial_number: 'INFY-VRV-6178-BLR',
+        current_location: 'Electronics City Campus - Block B',
+        warranty_status: 'ACTIVE_WARRANTY',
+        installation_date: hoursAgo(26 * 24),
+        godown_id: godownBengaluru.godown_id,
+        project_id: projectInfosys.project_id,
+      },
+      {
+        serial_number: 'APOLLO-CRAC-9034-CHN',
+        current_location: 'Apollo Chennai ICU Support Area',
+        warranty_status: 'UNDER_REPAIR',
+        installation_date: hoursAgo(14 * 24),
+        godown_id: godownBengaluru.godown_id,
+        project_id: projectApollo.project_id,
+      },
     ],
   });
 
@@ -287,6 +456,22 @@ async function main() {
     },
   });
 
+  const techRohit = await prisma.technician.create({
+    data: {
+      name: 'Rohit Sharma',
+      phone_number: '+91 98200 11234',
+      specialization: 'Industrial Chillers & Plant Utilities',
+    },
+  });
+
+  const techNeha = await prisma.technician.create({
+    data: {
+      name: 'Neha Kapoor',
+      phone_number: '+91 98765 43210',
+      specialization: 'Healthcare HVAC & Critical Environment Compliance',
+    },
+  });
+
   console.log('✔ Certified HVAC technicians created.');
 
   // 7. Real Service Dispatch Calls
@@ -298,6 +483,7 @@ async function main() {
         status: 'IN_PROGRESS',
         customer_id: customerPfizer.customer_id,
         technician_id: techMarcus.technician_id,
+        date_opened: hoursAgo(3),
       },
       {
         type: 'Diagnostic Call',
@@ -305,6 +491,7 @@ async function main() {
         status: 'IN_PROGRESS',
         customer_id: customerAmazon.customer_id,
         technician_id: techDavid.technician_id,
+        date_opened: hoursAgo(6),
       },
       {
         type: 'High Pressure Alarm',
@@ -312,6 +499,7 @@ async function main() {
         status: 'OPEN',
         customer_id: customerMarriott.customer_id,
         technician_id: techElena.technician_id,
+        date_opened: hoursAgo(9),
       },
       {
         type: 'Preventative Maintenance',
@@ -319,6 +507,7 @@ async function main() {
         status: 'COMPLETED',
         customer_id: customerTesla.customer_id,
         technician_id: techCarlos.technician_id,
+        date_opened: hoursAgo(36),
       },
       {
         type: 'System Inspection',
@@ -326,6 +515,39 @@ async function main() {
         status: 'OPEN',
         customer_id: customerKaiser.customer_id,
         technician_id: techDavid.technician_id,
+        date_opened: hoursAgo(12),
+      },
+      {
+        type: 'Performance Review',
+        defect_details: 'Cooling tower fan VFD harmonics above threshold at Tata Motors paint shop utilities',
+        status: 'IN_PROGRESS',
+        customer_id: customerTataMotors.customer_id,
+        technician_id: techRohit.technician_id,
+        date_opened: hoursAgo(2),
+      },
+      {
+        type: 'Critical Environment Check',
+        defect_details: 'Microbiological safety room pressure imbalance and AHU differential failure in oncology block',
+        status: 'OPEN',
+        customer_id: customerApollo.customer_id,
+        technician_id: techNeha.technician_id,
+        date_opened: hoursAgo(5),
+      },
+      {
+        type: 'Energy Optimization',
+        defect_details: 'Re-commissioning VRF system and sensor calibration for campus office blocks',
+        status: 'COMPLETED',
+        customer_id: customerInfosys.customer_id,
+        technician_id: techElena.technician_id,
+        date_opened: hoursAgo(28),
+      },
+      {
+        type: 'Utility Audit',
+        defect_details: 'Thermal storage cycle mismatch and cooling load balancing at Reliance complex',
+        status: 'OPEN',
+        customer_id: customerReliance.customer_id,
+        technician_id: techRohit.technician_id,
+        date_opened: hoursAgo(15),
       },
     ],
   });

@@ -16,6 +16,7 @@ import {
 import { useState } from 'react';
 import { Input } from './Input';
 import { Modal } from './Modal';
+import { formatDate } from '../utils/formatters';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard, desc: 'Overview, stats, and real-time command center' },
@@ -156,11 +157,7 @@ export function Layout() {
               </button>
 
               <div className="hidden sm:block text-xs text-gray-400 font-mono">
-                {new Date().toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
+                {formatDate(new Date())}
               </div>
             </div>
           </div>

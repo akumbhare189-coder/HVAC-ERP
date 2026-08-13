@@ -10,6 +10,7 @@ import { Modal } from '../components/Modal';
 import { enquiryApi } from '../api/enquiries';
 import { customerApi } from '../api/customers';
 import type { Enquiry, Customer, EnquiryStatus } from '../types';
+import { formatCurrencyINR, formatDate } from '../utils/formatters';
 
 const ENQUIRY_STATUSES: { value: EnquiryStatus; label: string; color: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' }[] = [
   { value: 'NEW', label: 'New', color: 'info' },
@@ -119,7 +120,7 @@ export function EnquiriesPage() {
     { 
       key: 'enquiry_date', 
       header: 'Date',
-      render: (item: Enquiry) => new Date(item.enquiry_date).toLocaleDateString(),
+      render: (item: Enquiry) => formatDate(item.enquiry_date),
     },
     { 
       key: 'projects', 
@@ -196,7 +197,7 @@ export function EnquiriesPage() {
               <div>
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Date</label>
                 <p className="text-gray-900 dark:text-white">
-                  {new Date(viewEnquiry.enquiry_date).toLocaleDateString()}
+                  {formatDate(viewEnquiry.enquiry_date)}
                 </p>
               </div>
               <div className="col-span-2">
@@ -212,7 +213,7 @@ export function EnquiriesPage() {
                 <ul className="space-y-2">
                   {viewEnquiry.projects.map((project) => (
                     <li key={project.project_id} className="text-sm text-gray-700 dark:text-gray-300">
-                      {project.project_id} - ${project.total_cost.toLocaleString()} - {project.advance_payment_status}
+                      {project.project_id} - {formatCurrencyINR(project.total_cost)} - {project.advance_payment_status}
                     </li>
                   ))}
                 </ul>
